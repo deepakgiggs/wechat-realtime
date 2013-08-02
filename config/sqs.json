@@ -1,0 +1,14 @@
+{
+  "development": {
+    "sqs_queue_name": "social_fb_feed_dev"
+  },
+  "staging": {
+    "sqs_queue_name": "social_fb_feed_staging"
+  },
+  "production": {
+    "sqs_queue_name": "social_fb_feed_prod"
+  },
+  "test": {
+    "sqs_queue_name": "social_fb_feed_test"
+  }
+}
