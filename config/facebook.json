@@ -1,0 +1,14 @@
+{
+  "development": {
+    "signature": "sha1=f7f90af5765bf0b51f8346f97faac898"
+  },
+  "staging": {
+    "signature": "sha1=81297d69e2deaf8152a7b0b96508c161"
+  },
+  "production": {
+    "signature": "sha1=ab8eb7b00386bf05035b0c62031d43f3"
+  },
+  "test": {
+    "signature": "sha1=f7f90af5765bf0b51f8346f97faac898"
+  }
+}
