@@ -26,13 +26,12 @@ aws = require "aws-sdk"
 aws.config.loadFromPath './config/aws.json'
 sqs_conf = require("./config/sqs.json")[environment]
 sqs = new aws.SQS()
-sqs_queue_name = sqs_conf["sqs_queue_name"]
 sqs_queue = require "./sqs"
 
 #facebook signature 
 signature = require("./config/facebook.json")[environment]["signature"]
 
-sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_queue_name, (error, sqs, queue_url) ->
+sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
   if error
     util.log "Error while checking queue. Exiting gracefully " + error
   else
