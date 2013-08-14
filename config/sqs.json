@@ -1,14 +1,22 @@
 {
   "development": {
-    "sqs_queue_name": "social_fb_feed_dev"
+    "sqs_queue_name": "social_fb_feed_dev",
+    "visibility_timeout" : "120",
+    "msg_retention_period" : "1209600"
   },
   "staging": {
-    "sqs_queue_name": "social_fb_feed_staging"
+    "sqs_queue_name": "social_fb_feed_staging",
+    "visibility_timeout" : "120",
+    "msg_retention_period" : "1209600"
   },
   "production": {
-    "sqs_queue_name": "social_fb_feed_prod"
+    "sqs_queue_name": "social_fb_feed_prod",
+    "visibility_timeout" : "120",
+    "msg_retention_period" : "1209600"
   },
   "test": {
-    "sqs_queue_name": "social_fb_feed_test"
+    "sqs_queue_name": "social_fb_feed_test",
+    "visibility_timeout" : "120",
+    "msg_retention_period" : "1209600"
   }
 }
