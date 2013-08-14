@@ -6,6 +6,9 @@ express = require "express"
 app = express()
 app.use(express.bodyParser());
 
+#logging to a file
+app.use(express.logger());
+
 #Setting the Enviroment Variables 
 nconf = require "nconf"
 nconf.argv().env().file({ file: './config.json' })
@@ -74,4 +77,4 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_queue_name, (error, sqs, queue_url
       app
       .listen(nconf.get("PORT"))
 
-      util.log("new application instance inside cluster!!!!!!!"))
+      util.log("new application instance inside cluster!!!!!!! "+  environment))
