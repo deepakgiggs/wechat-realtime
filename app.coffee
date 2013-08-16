@@ -63,7 +63,6 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
       #For pushing data to sqs
       app.post "/subscription",(request,response) ->
        try
-          m = 1/0
           request_signature = request.header('HTTP_X_HUB_SIGNATURE') || request.header('X-Hub-Signature')
           #source https://developers.facebook.com/docs/reference/api/realtime/
           body = JSON.stringify(request.body)
