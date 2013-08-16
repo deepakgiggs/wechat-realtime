@@ -29,7 +29,15 @@ sqs = new aws.SQS()
 sqs_queue = require "./sqs"
 
 #facebook signature
-signature = require("./config/facebook.json")[environment]["signature"]
+facebook_sha = require "./facebook_sha"
+facebook_app = require("./config/facebook.json")[environment]
+
+# error handling
+app.configure ->
+  app.use express.errorHandler(
+    dumpExceptions: true
+    showStack: true
+  )
 
 sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
   if error
@@ -61,14 +69,16 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
 
       #For pushing data to sqs
       app.post "/subscription",(request,response) ->
-        # util.log "*******************"
-        # request_signature = request.header('HTTP_X_HUB_SIGNATURE') || request.header('X-Hub-Signature')
-        # util.log request.header('HTTP_X_HUB_SIGNATURE')
-        #TO-DO validate the source https://developers.facebook.com/docs/reference/api/realtime/
+        request_signature = request.header('HTTP_X_HUB_SIGNATURE') || request.header('X-Hub-Signature')
+        #source https://developers.facebook.com/docs/reference/api/realtime/
         body = JSON.stringify(request.body)
-        sqs_queue.sendMessage sqs, queue_url, body
-        response.writeHead(200,{"Content-Type": "text/plain"});
-        response.end("This is subscription page put request")
+        if facebook_sha.validateReferal(body,facebook_app["secret_key"],request_signature)
+          sqs_queue.sendMessage sqs, queue_url, body
+          response.writeHead(200,{"Content-Type": "text/plain"});
+          response.end("This is subscription page put request")
+        else
+          response.writeHead(200,{"Content-Type": "text/plain"});
+          response.end("This request is comming from invalid source!!")  
 
       app.all "*", (request,response) ->
         response.writeHead(404, {"Content-Type": "text/plain"});
@@ -77,4 +87,4 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
       app
       .listen(nconf.get("PORT"))
 
-      util.log("new application instance inside cluster!!!!!!! "+  environment))
+      util.log("in "+environment+" environemnt new application instance started :) :) "))
