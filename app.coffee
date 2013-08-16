@@ -62,18 +62,24 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
 
       #For pushing data to sqs
       app.post "/subscription",(request,response) ->
-        request_signature = request.header('HTTP_X_HUB_SIGNATURE') || request.header('X-Hub-Signature')
-        #source https://developers.facebook.com/docs/reference/api/realtime/
-        body = JSON.stringify(request.body)
-        util.log body
-        util.log "******************************"
-        if facebook_sha.validateReferal(body,facebook_app["secret_key"],request_signature)
-          sqs_queue.sendMessage sqs, queue_url, body
-          response.writeHead(200,{"Content-Type": "text/plain"});
-          response.end("This is subscription page put request")
-        else
-          response.writeHead(200,{"Content-Type": "text/plain"});
-          response.end("This request is comming from invalid source!!")  
+       try
+          m = 1/0
+          request_signature = request.header('HTTP_X_HUB_SIGNATURE') || request.header('X-Hub-Signature')
+          #source https://developers.facebook.com/docs/reference/api/realtime/
+          body = JSON.stringify(request.body)
+          util.log body
+          util.log "******************************"
+          if facebook_sha.validateReferal(body,facebook_app["secret_key"],request_signature)
+            sqs_queue.sendMessage sqs, queue_url, body
+            response.writeHead(200,{"Content-Type": "text/plain"});
+            response.end("This is subscription page put request")
+          else
+            response.writeHead(200,{"Content-Type": "text/plain"});
+            response.end("This request is comming from invalid source!!") 
+       catch error
+          util.log "%%%%%%%%%%%%%%%%%%%%%%"
+          util.log error
+          util.log "%%%%%%%%%%%%%%%%%%%%%%"      
 
       app.all "*", (request,response) ->
         response.writeHead(404, {"Content-Type": "text/plain"});
