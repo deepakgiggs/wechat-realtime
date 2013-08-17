@@ -4,10 +4,6 @@ cluster = require "cluster"
 #framework for node
 express = require "express"
 app = express()
-app.use(express.bodyParser());
-
-#logging to a file
-app.use(express.logger());
 
 #Setting the Enviroment Variables
 nconf = require "nconf"
@@ -29,17 +25,19 @@ sqs = new aws.SQS()
 sqs_queue = require "./models/sqs"
 
 #facebook signature
-facebook_sha = require "./lib/facebook_sha"
+facebook_sha = require "./lib/util"
 facebook_app = require("./config/facebook.json")[environment]
 
 
 #error handling
-# error handling
 app.configure ->
   app.use express.errorHandler(
     dumpExceptions: true
     showStack: true
   )
+  app.use(express.bodyParser());
+  #logging to a file 
+  app.use(express.logger());
  
 
 sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
