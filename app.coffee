@@ -11,7 +11,7 @@ app.use(express.logger());
 
 #Setting the Enviroment Variables
 nconf = require "nconf"
-nconf.argv().env().file({ file: './config.json' })
+nconf.argv().env().file({ file: './config/environment.json' })
 environment = nconf.get("NODE_ENV")
 
 #Utility for logging
@@ -26,10 +26,10 @@ aws = require "aws-sdk"
 aws.config.loadFromPath './config/aws.json'
 sqs_conf = require("./config/sqs.json")[environment]
 sqs = new aws.SQS()
-sqs_queue = require "./sqs"
+sqs_queue = require "./models/sqs"
 
 #facebook signature
-facebook_sha = require "./facebook_sha"
+facebook_sha = require "./lib/facebook_sha"
 facebook_app = require("./config/facebook.json")[environment]
 
 
