@@ -1,35 +1,12 @@
-#including the cluster module for forking child process
 cluster = require "cluster"
-
-#framework for node
 express = require "express"
-app = express()
-
-#Setting the Enviroment Variables
 nconf = require "nconf"
-nconf.argv().env().file({ file: './config/environment.json' })
-environment = nconf.get("NODE_ENV")
-
-#Utility for logging
 util = require "util"
-
-#Number of Cpus available to fork that many process
-cCPUs   = require('os').cpus().length;
-
-
-#Setting up AWS SDK for finding the sqs queue
 aws = require "aws-sdk"
-aws.config.loadFromPath './config/aws.json'
-sqs_conf = require("./config/sqs.json")[environment]
-sqs = new aws.SQS()
-sqs_queue = require "./models/sqs"
+facebook_util = require "./lib/util"
 
-#facebook signature
-facebook_sha = require "./lib/util"
-facebook_app = require("./config/facebook.json")[environment]
-
-
-#error handling
+# app configuration
+app = express()
 app.configure ->
   app.use express.errorHandler(
     dumpExceptions: true
@@ -37,8 +14,25 @@ app.configure ->
   )
   app.use(express.bodyParser());
   #logging to a file 
-  app.use(express.logger());
+  app.use(express.logger('dev'));
+  app.use(express.methodOverride());
+  app.use(app.router);
  
+
+#Setting the Enviroment Variables
+nconf.argv().env().file({ file: './config/environment.json' })
+environment = nconf.get("NODE_ENV")
+
+#Number of Cpus available to fork that many process
+cCPUs   = require('os').cpus().length;
+
+#Setting up AWS SDK for finding the sqs queue
+aws.config.loadFromPath './config/aws.json'
+sqs_conf = require("./config/sqs.json")[environment]
+sqs = new aws.SQS()
+sqs_queue = require "./models/sqs"
+
+facebook_app = require("./config/facebook.json")[environment]
 
 sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
   if error
@@ -76,7 +70,7 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
           body = JSON.stringify(request.body)
           util.log body
           response.writeHead(200,{"Content-Type": "text/plain"});
-          if facebook_sha.validateReferal(body,facebook_app["secret_key"],request_signature)
+          if facebook_util.validateReferal(body,facebook_app["secret_key"],request_signature)
             sqs_queue.sendMessage sqs, queue_url, body
             response.end("This is subscription page put request")
           else
