@@ -1,5 +1,3 @@
-util = require "util"
-
 module.exports =
   checkQueue: (sqs, sqs_conf, callback) ->
     util.log "Inside checkQueue"

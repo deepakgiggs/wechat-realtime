@@ -1,0 +1,1 @@
+exports.subscriptionsController = require("./subscriptions_controller");

@@ -1,9 +1,9 @@
 cluster = require "cluster"
 express = require "express"
 nconf = require "nconf"
-util = require "util"
 aws = require "aws-sdk"
-facebook_util = require "./lib/util"
+global.facebook_util = require "./lib/util"
+global.util = require "util"
 
 # app configuration
 app = express()
@@ -21,7 +21,7 @@ app.configure ->
 
 #Setting the Enviroment Variables
 nconf.argv().env().file({ file: './config/environment.json' })
-environment = nconf.get("NODE_ENV")
+global.environment = nconf.get("NODE_ENV")
 
 #Number of Cpus available to fork that many process
 cCPUs   = require('os').cpus().length;
@@ -30,10 +30,11 @@ cCPUs   = require('os').cpus().length;
 aws.config.loadFromPath './config/aws.json'
 sqs_conf = require("./config/sqs.json")[environment]
 sqs = new aws.SQS()
-sqs_queue = require "./models/sqs"
+global.sqs_queue = require "./models/sqs"
 
-facebook_app = require("./config/facebook.json")[environment]
-
+global.facebook_app = require("./config/facebook.json")[environment]
+controllers = require("./controllers");
+global.m = 1
 sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
   if error
     util.log "Error while checking queue. Exiting gracefully " + error
@@ -54,29 +55,12 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
         util.log "Worker " + worker.process.pid + " died."
         cluster.fork()
     else
+      global.sqs = sqs
+      global.queue_url = sqs_queue_url
       #For Setting up the subscription url in facebook
-      app.get "/subscription",(request,response) ->
-        response.writeHead(200,{"Content-Type": "text/plain"});
-        if request.query["hub.mode"] is "subscribe" and request.query['hub.verify_token'] is "tokenforfreshdesk"
-          response.end request.query["hub.challenge"]
-        else
-          response.end "This is not valid request buddy!!!"
-
+      app.get "/subscription",controllers.subscriptionsController().getSubscription
       #For pushing data to sqs
-      app.post "/subscription",(request,response) ->
-       try
-          request_signature = request.header('HTTP_X_HUB_SIGNATURE') || request.header('X-Hub-Signature')
-          #source https://developers.facebook.com/docs/reference/api/realtime/
-          body = JSON.stringify(request.body)
-          util.log body
-          response.writeHead(200,{"Content-Type": "text/plain"});
-          if facebook_util.validateReferal(body,facebook_app["secret_key"],request_signature)
-            sqs_queue.sendMessage sqs, queue_url, body
-            response.end("This is subscription page put request")
-          else
-            response.end("This request is comming from invalid source!!") 
-       catch error
-          util.log error
+      app.post "/subscription",controllers.subscriptionsController().postSubscription
 
       app.all "*", (request,response) ->
         response.writeHead(200, {"Content-Type": "text/plain"});

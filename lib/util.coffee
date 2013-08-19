@@ -1,4 +1,3 @@
-util = require "util"
 crypto = require('crypto')
 
 module.exports =
@@ -7,7 +6,6 @@ module.exports =
    if hmacsha1 == request_signature
      return true
    else
-     util.log body
      util.log "different"
      return false
 
