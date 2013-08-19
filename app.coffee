@@ -5,6 +5,21 @@ aws = require "aws-sdk"
 global.facebook_util = require "./lib/util"
 global.util = require "util"
 
+#Setting the Enviroment Variables
+nconf.argv().env().file({ file: './config/environment.json' })
+global.environment = nconf.get("NODE_ENV")
+
+#Setting up AWS SDK for finding the sqs queue
+aws.config.loadFromPath './config/aws.json'
+sqs_conf = require("./config/sqs.json")[environment]
+sqs = new aws.SQS()
+global.sqs_queue = require "./models/sqs"
+global.facebook_app = require("./config/facebook.json")[environment]
+controllers = require("./controllers");
+
+#Number of Cpus available to fork that many process
+cCPUs   = require('os').cpus().length;
+
 # app configuration
 app = express()
 app.configure ->
@@ -18,23 +33,6 @@ app.configure ->
   app.use(express.methodOverride());
   app.use(app.router);
  
-
-#Setting the Enviroment Variables
-nconf.argv().env().file({ file: './config/environment.json' })
-global.environment = nconf.get("NODE_ENV")
-
-#Number of Cpus available to fork that many process
-cCPUs   = require('os').cpus().length;
-
-#Setting up AWS SDK for finding the sqs queue
-aws.config.loadFromPath './config/aws.json'
-sqs_conf = require("./config/sqs.json")[environment]
-sqs = new aws.SQS()
-global.sqs_queue = require "./models/sqs"
-
-global.facebook_app = require("./config/facebook.json")[environment]
-controllers = require("./controllers");
-global.m = 1
 sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
   if error
     util.log "Error while checking queue. Exiting gracefully " + error
