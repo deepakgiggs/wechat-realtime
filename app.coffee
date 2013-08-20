@@ -14,13 +14,14 @@ aws.config.loadFromPath './config/aws.json'
 sqs_conf = require("./config/sqs.json")[environment]
 sqs = new aws.SQS()
 global.sqs_queue = require "./models/sqs"
+
 global.facebook_app = require("./config/facebook.json")[environment]
 controllers = require("./controllers");
 
 #Number of Cpus available to fork that many process
-cCPUs   = require('os').cpus().length;
+cCPUs = require('os').cpus().length;
 
-# app configuration
+# App/Express configuration
 app = express()
 app.configure ->
   app.use express.errorHandler(
@@ -28,11 +29,11 @@ app.configure ->
     showStack: true
   )
   app.use(express.bodyParser());
-  #logging to a file 
+  #logging to a file
   app.use(express.logger('dev'));
   app.use(express.methodOverride());
   app.use(app.router);
- 
+
 sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
   if error
     util.log "Error while checking queue. Exiting gracefully " + error
@@ -55,16 +56,18 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
     else
       global.sqs = sqs
       global.queue_url = sqs_queue_url
-      #For Setting up the subscription url in facebook
-      app.get "/subscription",controllers.subscriptionsController().getSubscription
-      #For pushing data to sqs
-      app.post "/subscription",controllers.subscriptionsController().postSubscription
 
-      app.all "*", (request,response) ->
+      #For Setting up the subscription url in facebook
+      app.get "/subscription", controllers.subscriptionsController().getSubscription
+
+      #For pushing data to sqs
+      app.post "/subscription", controllers.subscriptionsController().postSubscription
+
+      #Rest of the routes using wildcard
+      app.all "*", (request, response) ->
         response.writeHead(200, {"Content-Type": "text/plain"});
         response.end("This request is not allowed")
 
-      app
-      .listen(nconf.get("PORT"))
+      app.listen(nconf.get("PORT"))
 
-      util.log("in "+environment+" environemnt new application instance started :) :) "))
+      util.log("in " + environment + " environemnt new application instance started"))
