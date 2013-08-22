@@ -55,8 +55,8 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
         cluster.fork()
     else
       global.sqs = sqs
-      global.queue_url = sqs_queue_url
-
+      global.queue_url = queue_url
+      
       #For Setting up the subscription url in facebook
       app.get "/subscription", controllers.subscriptionsController().getSubscription
 
