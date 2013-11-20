@@ -5,7 +5,7 @@
   },
   "staging": {
     "app_id": "177912822282439",
-    "secret_key": "cea91f96e0016a57cb14de6ecc3f61e5"
+    "secret_key": "81297d69e2deaf8152a7b0b96508c161"
   },
   "production": {
     "app_id": "128260310615386",
