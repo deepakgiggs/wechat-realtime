@@ -10,7 +10,7 @@
     "msg_retention_period" : "1209600"
   },
   "production": {
-    "sqs_queue_name": "social_fb_feed_prod",
+    "sqs_queue_name": "social_fb_feed_production",
     "visibility_timeout" : "120",
     "msg_retention_period" : "1209600"
   },

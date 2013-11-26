@@ -1,0 +1,18 @@
+{
+    "development" : {
+        "social_notification_topic" : "social_notification_dev",
+        "recipients" : ["revathi@freshdesk.com","arvind@freshdesk.com","sumankumar@freshdesk.com"]
+    },
+    "staging" : {
+        "social_notification_topic" : "social_notification_staging",
+        "recipients" : ["revathi@freshdesk.com","arvind@freshdesk.com","sumankumar@freshdesk.com"]
+    },
+    "production" : {
+        "social_notification_topic" : "social_notification_production",
+        "recipients" : ["revathi@freshdesk.com","arvind@freshdesk.com","sumankumar@freshdesk.com"]
+    },
+    "test" : {
+        "social_notification_topic" : "social_notification_test",
+        "recipients" : ["revathi@freshdesk.com","arvind@freshdesk.com","sumankumar@freshdesk.com"]
+    }
+}

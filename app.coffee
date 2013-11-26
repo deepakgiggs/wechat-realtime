@@ -1,7 +1,7 @@
 cluster = require "cluster"
 express = require "express"
 nconf = require "nconf"
-aws = require "aws-sdk"
+global.aws = require "aws-sdk"
 global.facebook_util = require "./lib/util"
 global.util = require "util"
 
@@ -14,6 +14,7 @@ aws.config.loadFromPath './config/aws.json'
 sqs_conf = require("./config/sqs.json")[environment]
 sqs = new aws.SQS()
 global.sqs_queue = require "./models/sqs"
+sns_util = require("./lib/sns")
 
 global.facebook_app = require("./config/facebook.json")[environment]
 controllers = require("./controllers");
@@ -33,6 +34,17 @@ app.configure ->
   app.use(express.logger('dev'));
   app.use(express.methodOverride());
   app.use(app.router);
+
+sns_util.create_notification(sqs, (create_notification_err, data) ->
+  if create_notification_err
+    util.log "Error in creating notification" + create_notification_err
+  else 
+    time = new Date().toISOString()
+    subject = "Facebook Node reconnnected"
+    message = "Facebook Node has reconnected at " + time + " in '" + environment + "' environment"
+    if cluster.isMaster
+      sns_util.publish_notification(data, message, subject)
+)
 
 sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
   if error
