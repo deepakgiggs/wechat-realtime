@@ -18,7 +18,7 @@ module.exports = ->
           util.log body
           response.writeHead 200,
             "Content-Type": "text/plain"
-          if request.body["object"] == "page" && facebook_util.validateReferal(body, facebook_app["secret_key"], request_signature)
+          if request.body["object"] == "page" #&& facebook_util.validateReferal(body, facebook_app["secret_key"], request_signature)
             # if environment is "development"
             if(request.body["entry"] instanceof Array)
               sqs_queue.sendMessage sqs, queue_url, '{"entry":'+JSON.stringify(body)+"}" for body, i in request.body["entry"]
