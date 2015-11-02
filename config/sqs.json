@@ -5,17 +5,17 @@
     "msg_retention_period" : "1209600"
   },
   "staging": { 
-    "sqs_queue_name": "social_wc_feed_staging",
+    "sqs_queue_name": "social_gnip_tweet_dev",
     "visibility_timeout" : "120",
     "msg_retention_period" : "1209600"
   },
   "production": {
-    "sqs_queue_name": "social_wc_feed_production",
+    "sqs_queue_name": "social_gnip_tweet_dev",
     "visibility_timeout" : "120",
     "msg_retention_period" : "1209600"
   },
   "test": {
-    "sqs_queue_name": "social_wc_feed_test",
+    "sqs_queue_name": "social_gnip_tweet_dev",
     "visibility_timeout" : "120",
     "msg_retention_period" : "1209600"
   }
