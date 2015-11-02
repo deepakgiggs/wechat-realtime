@@ -2,7 +2,6 @@ cluster = require "cluster"
 express = require "express"
 nconf = require "nconf"
 global.aws = require "aws-sdk"
-global.facebook_util = require "./lib/util"
 global.util = require "util"
 
 #Setting the Enviroment Variables
@@ -16,7 +15,7 @@ sqs = new aws.SQS()
 global.sqs_queue = require "./models/sqs"
 sns_util = require("./lib/sns")
 
-global.facebook_app = require("./config/facebook.json")[environment]
+global.wechat_app = require("./config/wechat.json")[environment]
 controllers = require("./controllers");
 
 #Number of Cpus available to fork that many process
@@ -40,8 +39,8 @@ sns_util.create_notification(sqs, (create_notification_err, data) ->
     util.log "Error in creating notification" + create_notification_err
   else 
     time = new Date().toISOString()
-    subject = "Facebook Node reconnnected"
-    message = "Facebook Node has reconnected at " + time + " in '" + environment + "' environment"
+    subject = "Wechat Node reconnnected"
+    message = "We chat Node has reconnected at " + time + " in '" + environment + "' environment"
     if cluster.isMaster
       sns_util.publish_notification(data, message, subject)
 )
@@ -69,11 +68,8 @@ sqs_queue_url = sqs_queue.checkQueue(sqs, sqs_conf, (error, sqs, queue_url) ->
       global.sqs = sqs
       global.queue_url = queue_url
       
-      #For Setting up the subscription url in facebook
-      app.get "/subscription", controllers.subscriptionsController().getSubscription
-
       #For pushing data to sqs
-      app.post "/subscription", controllers.subscriptionsController().postSubscription
+      app.post "/postWeChatMsg", controllers.subscriptionsController().postWeChatMsg
 
       #Rest of the routes using wildcard
       app.all "*", (request, response) ->

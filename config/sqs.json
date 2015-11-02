@@ -1,21 +1,21 @@
 {
   "development": {
-    "sqs_queue_name": "social_fb_feed_dev",
+    "sqs_queue_name": "social_gnip_tweet_dev",
     "visibility_timeout" : "120",
     "msg_retention_period" : "1209600"
   },
-  "staging": {
-    "sqs_queue_name": "social_fb_feed_staging",
+  "staging": { 
+    "sqs_queue_name": "social_wc_feed_staging",
     "visibility_timeout" : "120",
     "msg_retention_period" : "1209600"
   },
   "production": {
-    "sqs_queue_name": "social_fb_feed_production",
+    "sqs_queue_name": "social_wc_feed_production",
     "visibility_timeout" : "120",
     "msg_retention_period" : "1209600"
   },
   "test": {
-    "sqs_queue_name": "social_fb_feed_test",
+    "sqs_queue_name": "social_wc_feed_test",
     "visibility_timeout" : "120",
     "msg_retention_period" : "1209600"
   }
